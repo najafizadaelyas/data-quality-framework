@@ -1,0 +1,39 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "products",
+  "expectations": [
+    {
+      "expectation_type": "expect_table_columns_to_match_ordered_list",
+      "kwargs": {
+        "column_list": ["product_id", "name", "category", "price", "stock_qty", "updated_at"]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "product_id" },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": { "column": "price", "min_value": 0.01, "max_value": 99999 },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": { "column": "stock_qty", "min_value": 0, "max_value": 1000000 },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "category",
+        "value_set": ["electronics", "clothing", "food", "books", "home", "sports"]
+      },
+      "meta": {}
+    }
+  ],
+  "meta": {
+    "great_expectations_version": "0.18.19"
+  }
+}
