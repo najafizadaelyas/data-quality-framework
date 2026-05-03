@@ -77,7 +77,7 @@ def check_schema_drift(
     live = get_live_schema(table, schema, db_name)
     baseline = load_baseline(table)
 
-    if baseline is None:
+    if not baseline:  # None or empty dict — treat as first run
         logger.warning("No baseline for %s — saving current schema as baseline.", table)
         save_baseline(table, live)
         return SchemaDriftResult(table, [], [], [])

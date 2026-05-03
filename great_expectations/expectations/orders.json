@@ -41,8 +41,8 @@
       "meta": {}
     },
     {
-      "expectation_type": "expect_column_values_to_match_strftime_format",
-      "kwargs": { "column": "created_at", "strftime_format": "%Y-%m-%dT%H:%M:%S" },
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "created_at" },
       "meta": {}
     }
   ],

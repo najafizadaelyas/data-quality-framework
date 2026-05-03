@@ -19,11 +19,11 @@ def fetch_series(
     db_name: str | None = None,
     limit: int = 10_000,
 ) -> pd.Series:
-    from sqlalchemy import text
-
-    sql = text(f"SELECT {column} FROM {schema}.{table} WHERE {column} IS NOT NULL LIMIT :lim")
-    with get_connection(db_name) as conn:
-        df = pd.read_sql(sql, conn, params={"lim": limit})
+    from src.utils.db import get_engine
+    sql = f"SELECT {column} FROM {schema}.{table} WHERE {column} IS NOT NULL LIMIT {int(limit)}"
+    engine = get_engine(db_name)
+    with engine.connect() as conn:
+        df = pd.read_sql(sql, conn.connection)
     return df[column].astype(float)
 
 

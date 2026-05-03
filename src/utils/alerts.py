@@ -5,18 +5,21 @@ import smtplib
 from email.mime.text import MIMEText
 
 import requests
-from tenacity import retry, stop_after_attempt, wait_exponential
 
 from src.utils.config import config
 
 logger = logging.getLogger(__name__)
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+def _slack_configured() -> bool:
+    url = config.slack_webhook_url
+    return bool(url) and "hooks.slack.com" in url and "xxx" not in url
+
+
 def send_slack_alert(message: str, level: str = "warning") -> bool:
     """Post a message to the configured Slack webhook."""
-    if not config.slack_webhook_url:
-        logger.warning("SLACK_WEBHOOK_URL not configured — skipping Slack alert.")
+    if not _slack_configured():
+        logger.info("Slack not configured — skipping alert: %s", message)
         return False
 
     color_map = {"info": "#36a64f", "warning": "#ff9900", "error": "#d00000"}
@@ -29,14 +32,18 @@ def send_slack_alert(message: str, level: str = "warning") -> bool:
             }
         ]
     }
-    resp = requests.post(
-        config.slack_webhook_url,
-        data=json.dumps(payload),
-        headers={"Content-Type": "application/json"},
-        timeout=10,
-    )
-    resp.raise_for_status()
-    return True
+    try:
+        resp = requests.post(
+            config.slack_webhook_url,
+            data=json.dumps(payload),
+            headers={"Content-Type": "application/json"},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return True
+    except Exception as exc:
+        logger.warning("Slack alert failed: %s", exc)
+        return False
 
 
 def send_email_alert(subject: str, body: str, to: str | None = None) -> bool:

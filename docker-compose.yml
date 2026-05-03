@@ -7,11 +7,20 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
     PYTHONPATH: /opt/airflow
+    # DQ framework DB connection — points to the postgres service inside Docker
+    DB_HOST: postgres
+    DB_PORT: "5432"
+    DB_NAME: airflow
+    DB_USER: airflow
+    DB_PASSWORD: airflow
+    OPENLINEAGE_URL: http://marquez:5000
+    DB_CONNECTION_STRING: postgresql+psycopg2://airflow:airflow@postgres/airflow
   volumes:
     - ./dags:/opt/airflow/dags
     - ./src:/opt/airflow/src
     - ./great_expectations:/opt/airflow/great_expectations
     - airflow-logs:/opt/airflow/logs
+    - schema-baselines:/opt/airflow/great_expectations/schema_baselines
   depends_on:
     postgres:
       condition: service_healthy
@@ -92,3 +101,4 @@ volumes:
   postgres-db:
   airflow-logs:
   marquez-data:
+  schema-baselines:
